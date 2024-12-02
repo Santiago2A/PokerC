@@ -75,16 +75,28 @@ void on_generate_button_clicked(GtkButton *button, gpointer user_data) {
     Carta carta_jugador2_1 = repartir_carta(mazo);
     Carta carta_jugador2_2 = repartir_carta(mazo);
 
+    Carta carta_jugador3_1 = repartir_carta(mazo);
+    Carta carta_jugador3_2 = repartir_carta(mazo);
+
+
     // Recupera las imágenes y etiquetas para ambos jugadores
     GtkImage *imagen_carta_jugador1_1 = GTK_IMAGE(g_object_get_data(G_OBJECT(button), "imagen_carta_jugador1_1"));
     GtkImage *imagen_carta_jugador1_2 = GTK_IMAGE(g_object_get_data(G_OBJECT(button), "imagen_carta_jugador1_2"));
     GtkImage *imagen_carta_jugador2_1 = GTK_IMAGE(g_object_get_data(G_OBJECT(button), "imagen_carta_jugador2_1"));
     GtkImage *imagen_carta_jugador2_2 = GTK_IMAGE(g_object_get_data(G_OBJECT(button), "imagen_carta_jugador2_2"));
 
+    GtkImage *imagen_carta_jugador3_1 = GTK_IMAGE(g_object_get_data(G_OBJECT(button), "imagen_carta_jugador3_1"));
+    GtkImage *imagen_carta_jugador3_2 = GTK_IMAGE(g_object_get_data(G_OBJECT(button), "imagen_carta_jugador3_2"));
+
+
     GtkLabel *label_cartajugador_11 = GTK_LABEL(g_object_get_data(G_OBJECT(button), "label_cartajugador_11"));
     GtkLabel *label_cartajugador_12 = GTK_LABEL(g_object_get_data(G_OBJECT(button), "label_cartajugador_12"));
     GtkLabel *label_cartajugador_21 = GTK_LABEL(g_object_get_data(G_OBJECT(button), "label_cartajugador_21"));
     GtkLabel *label_cartajugador_22 = GTK_LABEL(g_object_get_data(G_OBJECT(button), "label_cartajugador_22"));
+
+
+    GtkLabel *label_cartajugador_31 = GTK_LABEL(g_object_get_data(G_OBJECT(button), "label_cartajugador_31"));
+    GtkLabel *label_cartajugador_32 = GTK_LABEL(g_object_get_data(G_OBJECT(button), "label_cartajugador_32"));
 
     // Función auxiliar para actualizar una carta
     void actualizar_carta(Carta carta, GtkImage *imagen, GtkLabel *label) {
@@ -128,6 +140,11 @@ void on_generate_button_clicked(GtkButton *button, gpointer user_data) {
     // Actualiza las cartas del jugador 2
     actualizar_carta(carta_jugador2_1, imagen_carta_jugador2_1, label_cartajugador_21);
     actualizar_carta(carta_jugador2_2, imagen_carta_jugador2_2, label_cartajugador_22);
+    // Actualiza las cartas del jugador 2
+    actualizar_carta(carta_jugador3_1, imagen_carta_jugador3_1, label_cartajugador_31);
+    actualizar_carta(carta_jugador3_2, imagen_carta_jugador3_2, label_cartajugador_32);
+
+    
 }
 
 
@@ -138,6 +155,10 @@ int main(int argc, char *argv[]) {
     GtkImage *imagen_carta_jugador2_1, *imagen_carta_jugador2_2;
     GtkLabel *label_cartajugador_11, *label_cartajugador_12;
     GtkLabel *label_cartajugador_21, *label_cartajugador_22;
+
+    GtkImage *imagen_carta_jugador3_1, *imagen_carta_jugador3_2;
+    GtkLabel *label_cartajugador_31, *label_cartajugador_32;
+
     GtkButton *generate_button;
 
     // Inicializa GTK
@@ -160,10 +181,16 @@ int main(int argc, char *argv[]) {
     imagen_carta_jugador2_1 = GTK_IMAGE(gtk_builder_get_object(builder, "imagen_carta_jugador2_1"));
     imagen_carta_jugador2_2 = GTK_IMAGE(gtk_builder_get_object(builder, "imagen_carta_jugador2_2"));
 
+    imagen_carta_jugador3_1 = GTK_IMAGE(gtk_builder_get_object(builder, "imagen_carta_jugador3_1"));
+    imagen_carta_jugador3_2 = GTK_IMAGE(gtk_builder_get_object(builder, "imagen_carta_jugador3_2"));
+
     label_cartajugador_11 = GTK_LABEL(gtk_builder_get_object(builder, "label_cartajugador_11"));
     label_cartajugador_12 = GTK_LABEL(gtk_builder_get_object(builder, "label_cartajugador_12"));
     label_cartajugador_21 = GTK_LABEL(gtk_builder_get_object(builder, "label_cartajugador_21"));
     label_cartajugador_22 = GTK_LABEL(gtk_builder_get_object(builder, "label_cartajugador_22"));
+
+    label_cartajugador_31 = GTK_LABEL(gtk_builder_get_object(builder, "label_cartajugador_31"));
+    label_cartajugador_32 = GTK_LABEL(gtk_builder_get_object(builder, "label_cartajugador_32"));
 
     // Conecta los widgets al callback
     g_object_set_data(G_OBJECT(generate_button), "mazo", mazo);
@@ -175,6 +202,11 @@ int main(int argc, char *argv[]) {
     g_object_set_data(G_OBJECT(generate_button), "imagen_carta_jugador2_2", imagen_carta_jugador2_2);
     g_object_set_data(G_OBJECT(generate_button), "label_cartajugador_21", label_cartajugador_21);
     g_object_set_data(G_OBJECT(generate_button), "label_cartajugador_22", label_cartajugador_22);
+
+    g_object_set_data(G_OBJECT(generate_button), "imagen_carta_jugador3_1", imagen_carta_jugador3_1);
+    g_object_set_data(G_OBJECT(generate_button), "imagen_carta_jugador3_2", imagen_carta_jugador3_2);
+    g_object_set_data(G_OBJECT(generate_button), "label_cartajugador_31", label_cartajugador_31);
+    g_object_set_data(G_OBJECT(generate_button), "label_cartajugador_32", label_cartajugador_32);
 
     // Conecta la señal del botón
     g_signal_connect(generate_button, "clicked", G_CALLBACK(on_generate_button_clicked), NULL);
