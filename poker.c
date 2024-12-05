@@ -261,23 +261,34 @@ void cambiar_turno() {
     
 }
 
-// Función para actualizar los labels
-void actualizar_labels(GtkWidget *label_pozo, GtkWidget *label_turno) {
-    // Verificar que los punteros no sean NULL
-    if (label_pozo == NULL || label_turno == NULL) {
-        printf("Error: Algún label es NULL.\n");
-        return;
-    }
+void on_button_actualizar_clicked(GtkButton *button, gpointer user_data) {
+    // Los punteros a los widgets a actualizar
+    GtkWidget *label_pozo = (GtkWidget*) user_data;
+    GtkWidget *label_turno = (GtkWidget*) g_object_get_data(G_OBJECT(button), "label_turno");
+    GtkWidget *creditos_jugador1 = (GtkWidget*) g_object_get_data(G_OBJECT(button), "creditos_jugador1");
+    GtkWidget *creditos_jugador2 = (GtkWidget*) g_object_get_data(G_OBJECT(button), "creditos_jugador2");
+    GtkWidget *creditos_jugador3 = (GtkWidget*) g_object_get_data(G_OBJECT(button), "creditos_jugador3");
 
-    // Actualizar el label del pozo
+    // Actualizamos los labels con los valores correspondientes
     char texto_pozo[50];
     snprintf(texto_pozo, sizeof(texto_pozo), "Pozo: %.2f", pozo);
     gtk_label_set_text(GTK_LABEL(label_pozo), texto_pozo);
 
-    // Actualizar el label del turno
     char texto_turno[90];
     snprintf(texto_turno, sizeof(texto_turno), "Turno de: %s", jugadores[turno_actual].nombre);
     gtk_label_set_text(GTK_LABEL(label_turno), texto_turno);
+
+    char texto_creditos1[50];
+    snprintf(texto_creditos1, sizeof(texto_creditos1), "Creditos: %.2f", jugadores[0].dineroTotal);
+    gtk_label_set_text(GTK_LABEL(creditos_jugador1), texto_creditos1);
+
+    char texto_creditos2[50];
+    snprintf(texto_creditos2, sizeof(texto_creditos2), "Creditos: %.2f", jugadores[1].dineroTotal);
+    gtk_label_set_text(GTK_LABEL(creditos_jugador2), texto_creditos2);
+
+    char texto_creditos3[50];
+    snprintf(texto_creditos3, sizeof(texto_creditos3), "Creditos: %.2f", jugadores[2].dineroTotal);
+    gtk_label_set_text(GTK_LABEL(creditos_jugador3), texto_creditos3);
 }
 
 void subir_apuesta(GtkWidget *button, gpointer user_data) {
@@ -342,11 +353,12 @@ int main(int argc, char *argv[]) {
     GtkLabel *label_cartajugador_31, *label_cartajugador_32;
 
     GtkButton *generate_button, *button_rcomunitaria;
-    GtkWidget *spin_apostar, *button_apostar, *button_retirarse;
+    GtkWidget *spin_apostar, *button_apostar, *button_retirarse,*button_actualizar;
     GtkWidget *label_turno, *label_pozo;
 
     GtkImage *carta_comunitaria1, *carta_comunitaria2, *carta_comunitaria3, *carta_comunitaria4, *carta_comunitaria5;
-
+    GtkWidget *creditos_jugador1, *creditos_jugador2, *creditos_jugador3;
+                       
     inicializar_jugadores();
     
     //nombre para los jugadores
@@ -392,12 +404,17 @@ int main(int argc, char *argv[]) {
     // Carga los widgets
     spin_apostar = GTK_WIDGET(gtk_builder_get_object(builder, "spin_apostar"));
     button_apostar = GTK_WIDGET(gtk_builder_get_object(builder, "button_apostar"));
+    button_actualizar = GTK_WIDGET(gtk_builder_get_object(builder, "button_actualizar"));
     
     
 
-    // Inicializa label_turno
+    // Inicializa labels
     label_turno = GTK_WIDGET(gtk_builder_get_object(builder, "label_turno"));
     label_pozo = GTK_WIDGET(gtk_builder_get_object(builder, "label_pozo"));
+    
+    creditos_jugador1 = GTK_WIDGET(gtk_builder_get_object(builder, "creditos_jugador1"));
+    creditos_jugador2 = GTK_WIDGET(gtk_builder_get_object(builder, "creditos_jugador2"));
+    creditos_jugador3 = GTK_WIDGET(gtk_builder_get_object(builder, "creditos_jugador3"));
 
   
     // Conecta los widgets al callback
@@ -417,12 +434,22 @@ int main(int argc, char *argv[]) {
     g_object_set_data(G_OBJECT(button_rcomunitaria), "carta_comunitaria4", carta_comunitaria4);
     g_object_set_data(G_OBJECT(button_rcomunitaria), "carta_comunitaria5", carta_comunitaria5);
 
+    g_object_set_data(G_OBJECT(button_actualizar), "label_turno", label_turno);
+    g_object_set_data(G_OBJECT(button_actualizar), "creditos_jugador1", creditos_jugador1);
+    g_object_set_data(G_OBJECT(button_actualizar), "creditos_jugador2", creditos_jugador2);
+    g_object_set_data(G_OBJECT(button_actualizar), "creditos_jugador3", creditos_jugador3);
+
+// Conectar el botón con la función de callback
+g_signal_connect(button_actualizar, "clicked", G_CALLBACK(on_button_actualizar_clicked), label_pozo);
+
+
     g_signal_connect(generate_button, "clicked", G_CALLBACK(on_generate_button_clicked), NULL);
 
     g_signal_connect(button_rcomunitaria, "clicked", G_CALLBACK(on_comunitaria_button_clicked), NULL);
     // Conectar el botón con la función
     g_signal_connect(button_apostar, "clicked", G_CALLBACK(subir_apuesta), spin_apostar);
 
+    g_signal_connect(button_actualizar, "clicked", G_CALLBACK(on_button_actualizar_clicked), label_pozo);
    
     
 
