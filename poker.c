@@ -3,6 +3,18 @@
 #include <time.h>
 #include <stdbool.h>
 
+/*
+Este programa es un juego de poker realizado con la interfaz de glade
+Se inicia con un boton repartir, que reparte 2 cartas a cada jugador
+Las apuestas se manejan con un un boton spin, para que el usuario pueda manejar la cantidad que va a apostar
+Si apuesta 0 se toma el jugador como retirado
+Si el jugador intenta ingresar más creditos de los que tiene se toma como un allin
+Una vez se tiene la ronda inicial de apuestas se tiene un boton de carta comunitaria que genera 1 a 1 las cartas comunitarias
+Se debe generar una carta comunitaria cada vez que termina una ronda
+Existe un boton en el esquina superior izquierda que actualiza los labels en cualquier momento
+El ganador se decide si solo queda un jugador activo o si se encuentran las 5 cartas comunitarias se proceden a analizar los mazos
+*/
+
 // Estructuras
 typedef struct {
     int simbolo;  // 0= Picas, 1= Corazones, 2= Diamantes, 3= Tréboles
@@ -16,25 +28,18 @@ typedef struct {
     double dineroTotal;      // Dinero total del jugador
     double apuestaActual;    // Apuesta actual del jugador
     int retirado;           // ¿El jugador se retiró?
-    //int rol;                 // 0 - Ninguno, 1 - Small Blind, 2 - Big Blind
-    Carta cartas[2];         //cartas en la mano del jugador
+            
     int numCartas;           // numero de cartas del jugador
+    Carta cartas[7];  // Cartas del jugador (máximo 7)
+    int mano;         // Tipo de mano que tiene el jugador (0-9)
+    int cartaAlta;    // Carta más alta del jugador
 } Jugador;
 
 Jugador jugadores[3];  // Array de jugadores
 
-int turno_actual = 0;  // Índice del jugador cuyo turno está activo
-int turno_anterior=0;
-int turno_siguiente=0;
 
-typedef struct {
-    Jugador jugadores[3];        // Lista de jugadores
-    Carta cartas_comunitarias[5]; // Cartas comunitarias
-    int cartas_comunitarias_reveladas;       // Número de cartas comunitarias visibles
-    Carta baraja[52];                          // baraja de cartas
-    int turno_actual;                        // Índice del jugador cuyo turno es
-    int num_jugadores_activos;               // Número de jugadores activos en la ronda
-} Juego;
+
+
 
 // Definir la baraja como un arreglo de cartas
 #define NUM_CARTAS 52
@@ -45,8 +50,10 @@ int cartasComunitarias = 1; // Inicialmente no hay cartas
 
 double pozo=0.0; //Apuesta actual de la ronda 
 
-// Declarar la función actualizar_labels antes de usarla
-void actualizar_labels(GtkWidget *label_pozo, GtkWidget *label_turno);
+int turno_actual = 0;  // Índice del jugador cuyo turno está activo
+
+
+
 
 
 
@@ -133,7 +140,16 @@ void on_generate_button_clicked(GtkButton *button, gpointer user_data) {
     Carta carta_jugador3_1 = repartir_carta(baraja);
     Carta carta_jugador3_2 = repartir_carta(baraja);
 
-    //Carta comunitaria1 = repartir_carta(baraja);
+    jugadores[0].cartas[0] = carta_jugador1_1;
+    jugadores[0].cartas[1] = carta_jugador1_2;
+
+    jugadores[1].cartas[0] = carta_jugador2_1;
+    jugadores[1].cartas[1] = carta_jugador2_2;
+
+    jugadores[2].cartas[0] = carta_jugador3_1;
+    jugadores[2].cartas[1] = carta_jugador3_2;
+
+    
     
 
     // Recupera las imágenes y etiquetas para ambos jugadores
@@ -145,7 +161,7 @@ void on_generate_button_clicked(GtkButton *button, gpointer user_data) {
     GtkImage *imagen_carta_jugador3_1 = GTK_IMAGE(g_object_get_data(G_OBJECT(button), "imagen_carta_jugador3_1"));
     GtkImage *imagen_carta_jugador3_2 = GTK_IMAGE(g_object_get_data(G_OBJECT(button), "imagen_carta_jugador3_2"));
     
-    //GtkImage *carta_comunitaria1 = GTK_IMAGE(g_object_get_data(G_OBJECT(button), "carta_comunitaria1"));
+    
 
     
 
@@ -173,8 +189,7 @@ void on_comunitaria_button_clicked(GtkButton *button, gpointer user_data) {
     GtkImage *carta_comunitaria3 = GTK_IMAGE(g_object_get_data(G_OBJECT(button), "carta_comunitaria3"));
     GtkImage *carta_comunitaria4 = GTK_IMAGE(g_object_get_data(G_OBJECT(button), "carta_comunitaria4"));
     GtkImage *carta_comunitaria5 = GTK_IMAGE(g_object_get_data(G_OBJECT(button), "carta_comunitaria5"));
-    // Obtiene las cartas para los jugadores
-    // Verificar si los datos están correctamente inicializados
+    
     
     switch (cartasComunitarias)
     {
@@ -206,29 +221,28 @@ void on_comunitaria_button_clicked(GtkButton *button, gpointer user_data) {
     
     
     default:
+        for (int i=0; i<3; i++){
+            jugadores[i].cartas[2] = comunitaria1;   
+        }
+        for (int i=0; i<3; i++){
+            jugadores[i].cartas[3] = comunitaria2;   
+        }
+        for (int i=0; i<3; i++){
+            jugadores[i].cartas[4] = comunitaria3;   
+        }
+        for (int i=0; i<3; i++){
+            jugadores[i].cartas[5] = comunitaria4;   
+        }
+        for (int i=0; i<3; i++){
+            jugadores[i].cartas[6] = comunitaria5;   
+        }
+
         cartasComunitarias=1;
         break;
     }
 
-    
-    
-    
 
-    
-
-    // Recupera las imágenes y etiquetas para ambos jugadores
-    
-    //GtkImage *carta_comunitaria1 = GTK_IMAGE(g_object_get_data(G_OBJECT(button), "carta_comunitaria1"));
-
-    
-
-    // Actualiza las cartas del jugador 1
-    
-    
-    
-    
-    
-    
+  
    
 }
 
@@ -241,8 +255,7 @@ void inicializar_jugadores() {
         jugadores[i].dineroTotal = 1000;  // Valor fijo inicial
         jugadores[i].apuestaActual = 0;
         jugadores[i].retirado = 0;
-        //jugadores[i].numCartas = 0;
-        // Nota: las cartas se inicializarían más tarde según las reglas del juego
+        
     }
 }
 
@@ -252,12 +265,11 @@ void cambiar_turno() {
     turno_actual = (turno_actual + 1) % 3;
 
     if (jugadores[turno_actual].retirado==1){
-        printf("%s retirado",jugadores[turno_actual].nombre);
+        printf("%s retirado \n",jugadores[turno_actual].nombre);
         cambiar_turno();
     }
 
-    // Llamar a la función para actualizar los labels
-    //actualizar_labels(label_pozo, label_turno);
+    
     
 }
 
@@ -289,6 +301,10 @@ void on_button_actualizar_clicked(GtkButton *button, gpointer user_data) {
     char texto_creditos3[50];
     snprintf(texto_creditos3, sizeof(texto_creditos3), "Creditos: %.2f", jugadores[2].dineroTotal);
     gtk_label_set_text(GTK_LABEL(creditos_jugador3), texto_creditos3);
+
+    if (cartasComunitarias==5){
+
+    }
 }
 
 void subir_apuesta(GtkWidget *button, gpointer user_data) {
@@ -336,6 +352,109 @@ void subir_apuesta(GtkWidget *button, gpointer user_data) {
     
 }
 
+
+// Función para ordenar las cartas por valor
+void ordenar_cartas(Carta cartas[], int tam) {
+    for (int i = 0; i < tam - 1; i++) {
+        for (int j = i + 1; j < tam; j++) {
+            if (cartas[i].valor > cartas[j].valor) {
+                Carta temp = cartas[i];
+                cartas[i] = cartas[j];
+                cartas[j] = temp;
+            }
+        }
+    }
+}
+
+// Función para reconocer la mejor mano del jugador
+void reconocer_mano(Jugador *jugador) {
+    if (jugador->numCartas < 5) {
+        jugador->mano = 0; // No hay suficientes cartas
+        jugador->cartaAlta = -1;
+        return;
+    }
+
+    // Ordenamos las cartas
+    ordenar_cartas(jugador->cartas, jugador->numCartas);
+
+    // Variables de análisis
+    int valores[13] = {0};  // Contador de valores (0=As, ..., 12=K)
+    int simbolos[4] = {0};  // Contador de símbolos (palos)
+
+    // Contamos valores y símbolos
+    for (int i = 0; i < jugador->numCartas; i++) {
+        valores[jugador->cartas[i].valor]++;
+        simbolos[jugador->cartas[i].simbolo]++;
+    }
+
+    // Revisamos combinaciones
+    int maxValor = jugador->cartas[jugador->numCartas - 1].valor; // La última carta tras ordenar es la más alta
+    int par = 0, trio = 0, cuatro = 0;
+    for (int i = 0; i < 13; i++) {
+        if (valores[i] == 2) par++;
+        if (valores[i] == 3) trio++;
+        if (valores[i] == 4) cuatro++;
+    }
+
+    // Full house
+    if (trio == 1 && par == 1) {
+        jugador->mano = 6; // Full house
+        jugador->cartaAlta = maxValor;
+        return;
+    }
+
+    // Cuatro iguales
+    if (cuatro == 1) {
+        jugador->mano = 7; // Cuatro iguales
+        jugador->cartaAlta = maxValor;
+        return;
+    }
+
+    // Escalera
+    int escalera = 0;
+    for (int i = 0; i <= 8; i++) {
+        if (valores[i] && valores[i + 1] && valores[i + 2] && valores[i + 3] && valores[i + 4]) {
+            escalera = 1;
+            maxValor = i + 4;
+            break;
+        }
+    }
+    if (escalera) {
+        jugador->mano = 4; // Escalera
+        jugador->cartaAlta = maxValor;
+        return;
+    }
+
+    // Color
+    for (int i = 0; i < 4; i++) {
+        if (simbolos[i] >= 5) {
+            jugador->mano = 5; // Color
+            jugador->cartaAlta = maxValor;
+            return;
+        }
+    }
+
+    // Carta alta
+    jugador->mano = 0;
+    jugador->cartaAlta = maxValor;
+}
+
+// Función para comparar las manos de dos jugadores
+int comparar_manos(Jugador *jugador1, Jugador *jugador2) {
+    if (jugador1->mano > jugador2->mano) {
+        return 1; // Jugador 1 gana
+    } else if (jugador1->mano < jugador2->mano) {
+        return 2; // Jugador 2 gana
+    } else {
+        if (jugador1->cartaAlta > jugador2->cartaAlta) {
+            return 1; // Jugador 1 gana
+        } else if (jugador1->cartaAlta < jugador2->cartaAlta) {
+            return 2; // Jugador 2 gana
+        } else {
+            return 0; // Empate
+        }
+    }
+}
 
 
 
