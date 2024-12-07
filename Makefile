@@ -5,8 +5,8 @@ LIBS = `pkg-config --libs gtk+-3.0`
 OUTPUT = exe
 
 # Target principal
-p1: poker.c
-	$(CC) $(CFLAGS) poker.c -o $(OUTPUT) $(LIBS)
+p1: proyecto.c
+	$(CC) $(CFLAGS) proyecto.c -o $(OUTPUT) $(LIBS)
 
 # Limpiar archivos generados
 clean:
