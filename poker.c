@@ -551,16 +551,15 @@ void reconocer_mano(Jugador *jugador) {
     } else {
         jugador->mano = 0; // Carta alta
     }
-    
+
 }
 
 // Función para comparar las manos de tres jugadores
 int comparar_manos(Jugador *jugador1, Jugador *jugador2, Jugador *jugador3) {
 
     int ganador12;
-    int ganador13;
-    int ganador23;
 
+    //caso en el que ninguno se retira
     if (jugador1->retirado == 0 && jugador2->retirado == 0 && jugador3->retirado == 0){
 
         // Primero comparamos las manos de jugador1 y jugador2
@@ -636,7 +635,7 @@ int comparar_manos(Jugador *jugador1, Jugador *jugador2, Jugador *jugador3) {
             }
         }
         //###################### fin comparación 1-3 ####################
-        
+
         if (ganador12 == 2){
             if (jugador2->mano > jugador3->mano) {
                return 2; // Jugador 2 gana sobre jugador 3
@@ -672,10 +671,131 @@ int comparar_manos(Jugador *jugador1, Jugador *jugador2, Jugador *jugador3) {
             }
         }
         //###################### fin comparación 2-3 ####################
-    }    
-        
-}
+    }
 
+    //##################### caso 3 se retira ###################
+    if (jugador1->retirado == 0 && jugador2->retirado == 0 && jugador3->retirado == 1){
+        if (jugador1->mano > jugador2->mano) {
+           return 1; // Jugador 1 gana sobre jugador 2
+        } else if (jugador1->mano < jugador2->mano) {
+            return 2; // Jugador 2 gana sobre jugador 1
+        } else if (jugador1->mano == 1 || jugador1->mano == 2 || jugador1->mano == 3 || jugador1->mano == 7){
+            if (jugador1->ordenmano > jugador2->ordenmano){
+                return 1;
+            }
+            else if (jugador1->ordenmano < jugador2->ordenmano){
+                return 2;
+            }
+            else {
+                // Si las manos y los ordenes son iguales, comparamos las cartas altas
+                if (jugador1->cartaAlta > jugador2->cartaAlta) {
+                    return 1; // Jugador 1 gana sobre jugador 2
+                } else if (jugador1->cartaAlta < jugador2->cartaAlta) {
+                    return 2; // Jugador 2 gana sobre jugador 1
+                } else {
+                    return 0; // Empate entre jugador 1 y jugador 2
+                }
+
+            }
+        } else {
+            // Si las manos y los ordenes son iguales, comparamos las cartas altas
+            if (jugador1->cartaAlta > jugador2->cartaAlta) {
+                return 1; // Jugador 1 gana sobre jugador 2
+            } else if (jugador1->cartaAlta < jugador3->cartaAlta) {
+                return 2; // Jugador 2 gana sobre jugador 1
+            } else {
+                return 0; // Empate entre jugador 1 y jugador 2
+            }
+        }
+    }
+
+
+
+    // ############### caso 2 se retira #################
+    if (jugador1->retirado == 0 && jugador2->retirado == 1 && jugador3->retirado == 0){
+        if (jugador1->mano > jugador3->mano) {
+           return 1; // Jugador 1 gana sobre jugador 3
+        } else if (jugador1->mano < jugador3->mano) {
+            return 3; // Jugador 3 gana sobre jugador 1
+        } else if (jugador1->mano == 1 || jugador1->mano == 2 || jugador1->mano == 3 || jugador1->mano == 7){
+            if (jugador1->ordenmano > jugador3->ordenmano){
+                return 1;
+            }
+            else if (jugador1->ordenmano < jugador3->ordenmano){
+                return 3;
+            }
+            else {
+                // Si las manos y los ordenes son iguales, comparamos las cartas altas
+                if (jugador1->cartaAlta > jugador3->cartaAlta) {
+                    return 1; // Jugador 1 gana sobre jugador 3
+                } else if (jugador1->cartaAlta < jugador3->cartaAlta) {
+                    return 3; // Jugador 3 gana sobre jugador 1
+                } else {
+                    return 0; // Empate entre jugador 1 y jugador 3
+                }
+
+            }
+        } else {
+            // Si las manos y los ordenes son iguales, comparamos las cartas altas
+            if (jugador1->cartaAlta > jugador3->cartaAlta) {
+                return 1; // Jugador 1 gana sobre jugador 3
+            } else if (jugador1->cartaAlta < jugador3->cartaAlta) {
+                return 3; // Jugador 3 gana sobre jugador 1
+            } else {
+                return 0; // Empate entre jugador 1 y jugador 3
+            }
+        }
+    }
+
+    // ############### caso 1 se retira #################
+    if (jugador1->retirado == 1 && jugador2->retirado == 0 && jugador3->retirado == 0){
+        if (jugador2->mano > jugador3->mano) {
+           return 2; // Jugador 2 gana sobre jugador 3
+        } else if (jugador2->mano < jugador3->mano) {
+            return 3; // Jugador 3 gana sobre jugador 2
+        } else if (jugador2->mano == 1 || jugador2->mano == 2 || jugador2->mano == 3 || jugador2->mano == 7){
+            if (jugador2->ordenmano > jugador3->ordenmano){
+                return 2;
+            }
+            else if (jugador2->ordenmano < jugador3->ordenmano){
+                return 3;
+            }
+            else {
+                // Si las manos y los ordenes son iguales, comparamos las cartas altas
+                if (jugador2->cartaAlta > jugador3->cartaAlta) {
+                    return 2; // Jugador 2 gana sobre jugador 3
+                } else if (jugador2->cartaAlta < jugador3->cartaAlta) {
+                    return 3; // Jugador 3 gana sobre jugador 2
+                } else {
+                    return 0; // Empate entre jugador 2 y jugador 3
+                }
+
+            }
+        } else {
+            // Si las manos y los ordenes son iguales, comparamos las cartas altas
+            if (jugador2->cartaAlta > jugador3->cartaAlta) {
+                return 2; // Jugador 2 gana sobre jugador 3
+            } else if (jugador2->cartaAlta < jugador3->cartaAlta) {
+                return 3; // Jugador 3 gana sobre jugador 2
+            } else {
+                return 0; // Empate entre jugador 2 y jugador 3
+            }
+        }
+    }
+    //##################### caso 1 no se retira ###################
+    if (jugador1->retirado == 0 && jugador2->retirado == 1 && jugador3->retirado == 1){
+        return 1;
+    }
+    //##################### caso 2 no se retira ###################
+    if (jugador1->retirado == 1 && jugador2->retirado == 0 && jugador3->retirado == 1){
+        return 2;
+    }
+    //##################### caso 3 no se retira ###################
+    if (jugador1->retirado == 1 && jugador2->retirado == 1 && jugador3->retirado == 0){
+        return 3;
+    }
+
+}
 
 
 
