@@ -13,13 +13,14 @@ Una vez se tiene la ronda inicial de apuestas se tiene un boton de carta comunit
 Se debe generar una carta comunitaria cada vez que termina una ronda
 Existe un boton en el esquina superior izquierda que actualiza los labels en cualquier momento
 El ganador se decide si solo queda un jugador activo o si se encuentran las 5 cartas comunitarias se proceden a analizar los mazos
+
 */
 
 // Estructuras
 typedef struct {
     int simbolo;  // 0= Picas, 1= Corazones, 2= Diamantes, 3= Tréboles
     int valor;    // 0= As, 1= 2, ..., 10= J, 11= Q, 12= K
-    char imagen[20];  // Nombre de la imagen (por ejemplo, "0-2.png")
+    char imagen[20];  // Nombre de la ruta de la imagen (por ejemplo, "0-2.png")
 } Carta;
 
 // Estructura para almacenar los datos del jugador
@@ -27,9 +28,10 @@ typedef struct {
     char nombre[50];         // Nombre del jugador
     double dineroTotal;      // Dinero total del jugador
     double apuestaActual;    // Apuesta actual del jugador
-    int retirado;           // ¿El jugador se retiró?
+    int retirado;
+    int ordenmano;    // orden del par o trio           // ¿El jugador se retiró?
             
-    //int numCartas;           // numero de cartas del jugador
+    
     Carta cartas[7];  // Cartas del jugador (máximo 7)
     int mano;         // Tipo de mano que tiene el jugador (0-9)
     int cartaAlta;    // Carta más alta del jugador
@@ -52,6 +54,7 @@ double pozo=0.0; //Apuesta actual de la ronda
 
 int turno_actual = 0;  // Índice del jugador cuyo turno está activo
 //Declaracion de funciones
+int ganador=1;
 
 // Prototipo de la función reconocer_mano
 void reconocer_mano(Jugador *jugador);
@@ -81,7 +84,7 @@ void inicializarBaraja() {
     }
 }
 
-// Función para mezclar la baraja de cartas
+
 // Función para mezclar la baraja de cartas
 void mezclarBaraja(Carta *baraja, int numCartas) {
     // Inicializar la semilla del generador de números aleatorios
@@ -231,7 +234,7 @@ void on_comunitaria_button_clicked(GtkButton *button, gpointer user_data) {
         Carta comunitaria4 = repartir_carta(baraja);
         for (int i=0; i<3; i++){
             jugadores[i].cartas[5] = comunitaria4;
-            printf("---------------------6\n");   
+              
         }
         actualizar_carta(comunitaria4, carta_comunitaria4 );
         cartasComunitarias++;
@@ -240,7 +243,7 @@ void on_comunitaria_button_clicked(GtkButton *button, gpointer user_data) {
         Carta comunitaria5 = repartir_carta(baraja);
 
         for (int i=0; i<3; i++){
-            printf("---------------------7\n");
+            
             jugadores[i].cartas[6] = comunitaria5;   
         }
         actualizar_carta(comunitaria5, carta_comunitaria5 );
@@ -249,37 +252,26 @@ void on_comunitaria_button_clicked(GtkButton *button, gpointer user_data) {
     
     
     default:
+
         
         
         
-        
-        
-        
-        //printf("%s", jugadores[0].nombre);
-        
-        printf("---------------------8\n");
         for (int i = 0; i < 3; i++)
         {
             imprimir_cartas(&jugadores[i]);
         }
-        printf("---------------------8\n");
+        
         for (int i = 0; i < 3; i++)
         {
             reconocer_mano(&jugadores[i]);
         }
         
+// ######################################Ganador 
         
-        
-        
-        
-        
-
-        
-        
-        
-        int ganador = comparar_manos(&jugadores[0], &jugadores[1], &jugadores[2]);
+        ganador = comparar_manos(&jugadores[0], &jugadores[1], &jugadores[2]);
         printf("ganador %d", ganador);
         if (ganador == 1) {
+            
             printf("Jugador 1 gana.\n");
         } else if (ganador == 2) {
             printf("Jugador 2 gana.\n");
@@ -287,7 +279,27 @@ void on_comunitaria_button_clicked(GtkButton *button, gpointer user_data) {
             printf("Jugador 3 gana.\n");
         } else {
             printf("Es un empate entre los jugadores.\n");
+            for (int i = 0; i < 3; i++)
+            {
+                jugadores[i].dineroTotal +=pozo/3;
+            }
+            
+            
+
         }
+
+        
+        
+        jugadores[ganador-1].dineroTotal +=pozo;
+        pozo=0;
+
+        for (int i = 0; i < 3; i++)
+        {
+            jugadores[i].retirado=0 ; //reinicia el estado de los jugadores
+        }
+
+        
+        
 
         
 
@@ -329,16 +341,21 @@ void imprimir_cartas(Jugador *jugador) {
 void inicializar_jugadores() {
     // Asignar valores iniciales a cada jugador
     for (int i = 0; i < 3; i++) {
-        snprintf(jugadores[i].nombre, sizeof(jugadores[i].nombre), "Jugador %d", i + 1); // Nombres predeterminados
+        
         jugadores[i].dineroTotal = 1000;  // Valor fijo inicial
         jugadores[i].apuestaActual = 0;
         jugadores[i].retirado = 0;
-        //jugadores[i].numCartas= 6;
+        
         
     }
+
+    //nombre para los jugadores
+    strcpy(jugadores[0].nombre, "Jugador 1");
+    strcpy(jugadores[1].nombre, "Jugador 2");
+    strcpy(jugadores[2].nombre, "Jugador 3");
 }
 
-//void cambiar_turno(GtkWidget *label_pozo, GtkWidget *label_turno) {
+
 void cambiar_turno() {
     // Cambiar al siguiente jugador
     turno_actual = (turno_actual + 1) % 3;
@@ -360,6 +377,9 @@ void on_button_actualizar_clicked(GtkButton *button, gpointer user_data) {
     GtkWidget *creditos_jugador2 = (GtkWidget*) g_object_get_data(G_OBJECT(button), "creditos_jugador2");
     GtkWidget *creditos_jugador3 = (GtkWidget*) g_object_get_data(G_OBJECT(button), "creditos_jugador3");
 
+    GtkWidget *label_ganador = (GtkWidget*) g_object_get_data(G_OBJECT(button), "label_ganador");
+
+
     // Actualizamos los labels con los valores correspondientes
     char texto_pozo[50];
     snprintf(texto_pozo, sizeof(texto_pozo), "Pozo: %.2f", pozo);
@@ -370,20 +390,28 @@ void on_button_actualizar_clicked(GtkButton *button, gpointer user_data) {
     gtk_label_set_text(GTK_LABEL(label_turno), texto_turno);
 
     char texto_creditos1[50];
-    snprintf(texto_creditos1, sizeof(texto_creditos1), "Creditos: %.2f", jugadores[0].dineroTotal);
+    snprintf(texto_creditos1, sizeof(texto_creditos1), "Creditos J1: %.2f", jugadores[0].dineroTotal);
     gtk_label_set_text(GTK_LABEL(creditos_jugador1), texto_creditos1);
 
     char texto_creditos2[50];
-    snprintf(texto_creditos2, sizeof(texto_creditos2), "Creditos: %.2f", jugadores[1].dineroTotal);
+    snprintf(texto_creditos2, sizeof(texto_creditos2), "Creditos J2: %.2f", jugadores[1].dineroTotal);
     gtk_label_set_text(GTK_LABEL(creditos_jugador2), texto_creditos2);
 
     char texto_creditos3[50];
-    snprintf(texto_creditos3, sizeof(texto_creditos3), "Creditos: %.2f", jugadores[2].dineroTotal);
+    snprintf(texto_creditos3, sizeof(texto_creditos3), "Creditos J3: %.2f", jugadores[2].dineroTotal);
     gtk_label_set_text(GTK_LABEL(creditos_jugador3), texto_creditos3);
 
-    if (cartasComunitarias==5){
-
+    char texto_ganador[99];
+    if (ganador==0)
+    {
+        snprintf(texto_ganador, sizeof(texto_ganador), "Ultimo Ganador: Empate" );
+    gtk_label_set_text(GTK_LABEL(label_ganador), texto_ganador);
+    } else{
+    
+    snprintf(texto_ganador, sizeof(texto_ganador), "Ultimo Ganador: %s", jugadores[ganador-1].nombre);
+    gtk_label_set_text(GTK_LABEL(label_ganador), texto_ganador);
     }
+
 }
 
 void subir_apuesta(GtkWidget *button, gpointer user_data) {
@@ -447,6 +475,13 @@ void ordenar_cartas(Carta cartas[], int numCartas) {
 
 // Función para reconocer la mejor mano del jugador
 void reconocer_mano(Jugador *jugador) {
+
+
+    // Definir carta alta
+    ordenar_cartas(jugador->cartas, 2);
+    jugador->cartaAlta = jugador->cartas[1].valor; // Última carta tras ordenar es la más alta
+
+
     ordenar_cartas(jugador->cartas, 7); // Ordenar las cartas del jugador por valor
     
     // Variables de análisis
@@ -464,9 +499,18 @@ void reconocer_mano(Jugador *jugador) {
     // Revisamos combinaciones
     int par = 0, trio = 0, cuatro = 0;
     for (int i = 0; i < 13; i++) {
-        if (valores[i] == 2) par++;
-        if (valores[i] == 3) trio++;
-        if (valores[i] == 4) cuatro++;
+        if (valores[i] == 2) {
+            par++;
+            jugador->ordenmano = i;
+        }
+        if (valores[i] == 3) {
+            trio++;
+            jugador->ordenmano = i;
+        }
+        if (valores[i] == 4) {
+            cuatro++;
+            jugador->ordenmano = i;
+        }
     }
     
     int escalera = 0;
@@ -508,80 +552,128 @@ void reconocer_mano(Jugador *jugador) {
         jugador->mano = 0; // Carta alta
     }
     
-
-    // Definir carta alta
-    jugador->cartaAlta = jugador->cartas[6].valor; // Última carta tras ordenar es la más alta
 }
 
 // Función para comparar las manos de tres jugadores
 int comparar_manos(Jugador *jugador1, Jugador *jugador2, Jugador *jugador3) {
-    // Primero comparamos las manos de jugador1 y jugador2
-    int ganador12;
-    if (jugador1->mano > jugador2->mano) {
-        ganador12 = 1; // Jugador 1 gana sobre jugador 2
-    } else if (jugador1->mano < jugador2->mano) {
-        ganador12 = 2; // Jugador 2 gana sobre jugador 1
-    } else {
-        // Si las manos son iguales, comparamos las cartas altas
-        if (jugador1->cartaAlta > jugador2->cartaAlta) {
-            ganador12 = 1; // Jugador 1 gana sobre jugador 2
-        } else if (jugador1->cartaAlta < jugador2->cartaAlta) {
-            ganador12 = 2; // Jugador 2 gana sobre jugador 1
-        } else {
-            ganador12 = 0; // Empate entre jugador 1 y jugador 2
-        }
-    }
 
-    // Ahora comparamos el ganador de jugador1 y jugador2 contra jugador3
-    if (ganador12 == 1) {
-        // Jugador 1 es el ganador preliminar
-        if (jugador1->mano > jugador3->mano) {
-            return 1; // Jugador 1 gana
-        } else if (jugador1->mano < jugador3->mano) {
-            return 3; // Jugador 3 gana
+    int ganador12;
+    int ganador13;
+    int ganador23;
+
+    if (jugador1->retirado == 0 && jugador2->retirado == 0 && jugador3->retirado == 0){
+
+        // Primero comparamos las manos de jugador1 y jugador2
+        if (jugador1->mano > jugador2->mano) {
+            ganador12 = 1; // Jugador 1 gana sobre jugador 2
+        } else if (jugador1->mano < jugador2->mano) {
+            ganador12 = 2; // Jugador 2 gana sobre jugador 1
+        } else if (jugador1->mano == 1 || jugador1->mano == 2 || jugador1->mano == 3 || jugador1->mano == 7){
+            if (jugador1->ordenmano > jugador2->ordenmano){
+                ganador12 = 1;
+            }
+            else if (jugador1->ordenmano < jugador2->ordenmano){
+                ganador12 = 2;
+            }
+            else {
+                // Si las manos y los ordenes son iguales, comparamos las cartas altas
+                if (jugador1->cartaAlta > jugador2->cartaAlta) {
+                    ganador12 = 1; // Jugador 1 gana sobre jugador 2
+                } else if (jugador1->cartaAlta < jugador2->cartaAlta) {
+                    ganador12 = 2; // Jugador 2 gana sobre jugador 1
+                } else {
+                    ganador12 = 0; // Empate entre jugador 1 y jugador 2
+                }
+
+            }
         } else {
             // Si las manos son iguales, comparamos las cartas altas
-            if (jugador1->cartaAlta > jugador3->cartaAlta) {
-                return 1; // Jugador 1 gana
-            } else if (jugador1->cartaAlta < jugador3->cartaAlta) {
-                return 3; // Jugador 3 gana
+            if (jugador1->cartaAlta > jugador2->cartaAlta) {
+                ganador12 = 1; // Jugador 1 gana sobre jugador 2
+            } else if (jugador1->cartaAlta < jugador2->cartaAlta) {
+                ganador12 = 2; // Jugador 2 gana sobre jugador 1
             } else {
-                return 0; // Empate
+                ganador12 = 0; // Empate entre jugador 1 y jugador 2
             }
         }
-    } else if (ganador12 == 2) {
-        // Jugador 2 es el ganador preliminar
-        if (jugador2->mano > jugador3->mano) {
-            return 2; // Jugador 2 gana
-        } else if (jugador2->mano < jugador3->mano) {
-            return 3; // Jugador 3 gana
-        } else {
-            // Si las manos son iguales, comparamos las cartas altas
-            if (jugador2->cartaAlta > jugador3->cartaAlta) {
-                return 2; // Jugador 2 gana
-            } else if (jugador2->cartaAlta < jugador3->cartaAlta) {
-                return 3; // Jugador 3 gana
+
+        //########### fin comparacion 1-2 ################
+
+        // Ahora comparamos el ganador de jugador1 y jugador2 contra jugador3
+        // caso en el que 1 gana
+        if (ganador12 == 1){
+            if (jugador1->mano > jugador3->mano) {
+               return 1; // Jugador 1 gana sobre jugador 3
+            } else if (jugador1->mano < jugador3->mano) {
+                return 3; // Jugador 3 gana sobre jugador 1
+            } else if (jugador1->mano == 1 || jugador1->mano == 2 || jugador1->mano == 3 || jugador1->mano == 7){
+                if (jugador1->ordenmano > jugador3->ordenmano){
+                    return 1;
+                }
+                else if (jugador1->ordenmano < jugador3->ordenmano){
+                    return 3;
+                }
+                else {
+                    // Si las manos y los ordenes son iguales, comparamos las cartas altas
+                    if (jugador1->cartaAlta > jugador3->cartaAlta) {
+                        return 1; // Jugador 1 gana sobre jugador 3
+                    } else if (jugador1->cartaAlta < jugador3->cartaAlta) {
+                        return 3; // Jugador 3 gana sobre jugador 1
+                    } else {
+                        return 0; // Empate entre jugador 1 y jugador 3
+                    }
+
+                }
             } else {
-                return 0; // Empate
+                // Si las manos y los ordenes son iguales, comparamos las cartas altas
+                if (jugador1->cartaAlta > jugador3->cartaAlta) {
+                    return 1; // Jugador 1 gana sobre jugador 3
+                } else if (jugador1->cartaAlta < jugador3->cartaAlta) {
+                    return 3; // Jugador 3 gana sobre jugador 1
+                } else {
+                    return 0; // Empate entre jugador 1 y jugador 3
+                }
             }
         }
-    } else {
-        // Empate entre jugador1 y jugador2, ahora comparamos con jugador3
-        if (jugador3->mano > jugador1->mano) {
-            return 3; // Jugador 3 gana
-        } else if (jugador3->mano < jugador1->mano) {
-            return 0; // Empate entre jugador1, jugador2, y jugador3
-        } else {
-            // Si las manos son iguales, comparamos las cartas altas
-            if (jugador3->cartaAlta > jugador1->cartaAlta) {
-                return 3; // Jugador 3 gana
-            } else if (jugador3->cartaAlta < jugador1->cartaAlta) {
-                return 0; // Empate entre todos
+        //###################### fin comparación 1-3 ####################
+        
+        if (ganador12 == 2){
+            if (jugador2->mano > jugador3->mano) {
+               return 2; // Jugador 2 gana sobre jugador 3
+            } else if (jugador2->mano < jugador3->mano) {
+                return 3; // Jugador 3 gana sobre jugador 2
+            } else if (jugador2->mano == 1 || jugador2->mano == 2 || jugador2->mano == 3 || jugador2->mano == 7){
+                if (jugador2->ordenmano > jugador3->ordenmano){
+                    return 2;
+                }
+                else if (jugador2->ordenmano < jugador3->ordenmano){
+                    return 3;
+                }
+                else {
+                    // Si las manos y los ordenes son iguales, comparamos las cartas altas
+                    if (jugador2->cartaAlta > jugador3->cartaAlta) {
+                        return 2; // Jugador 2 gana sobre jugador 3
+                    } else if (jugador2->cartaAlta < jugador3->cartaAlta) {
+                        return 3; // Jugador 3 gana sobre jugador 2
+                    } else {
+                        return 0; // Empate entre jugador 2 y jugador 3
+                    }
+
+                }
             } else {
-                return 0; // Empate entre todos
+                // Si las manos y los ordenes son iguales, comparamos las cartas altas
+                if (jugador2->cartaAlta > jugador3->cartaAlta) {
+                    return 2; // Jugador 2 gana sobre jugador 3
+                } else if (jugador2->cartaAlta < jugador3->cartaAlta) {
+                    return 3; // Jugador 3 gana sobre jugador 2
+                } else {
+                    return 0; // Empate entre jugador 2 y jugador 3
+                }
             }
         }
-    }
+        //###################### fin comparación 2-3 ####################
+    }    
+        
 }
 
 
@@ -593,30 +685,26 @@ int main(int argc, char *argv[]) {
     GtkWidget *window;
     GtkImage *imagen_carta_jugador1_1, *imagen_carta_jugador1_2;
     GtkImage *imagen_carta_jugador2_1, *imagen_carta_jugador2_2;
-    GtkLabel *label_cartajugador_11, *label_cartajugador_12;
-    GtkLabel *label_cartajugador_21, *label_cartajugador_22;
+    
 
     GtkImage *imagen_carta_jugador3_1, *imagen_carta_jugador3_2;
-    GtkLabel *label_cartajugador_31, *label_cartajugador_32;
+    
 
     GtkButton *generate_button, *button_rcomunitaria;
     GtkWidget *spin_apostar, *button_apostar, *button_retirarse,*button_actualizar;
     GtkWidget *label_turno, *label_pozo;
 
     GtkImage *carta_comunitaria1, *carta_comunitaria2, *carta_comunitaria3, *carta_comunitaria4, *carta_comunitaria5;
-    GtkWidget *creditos_jugador1, *creditos_jugador2, *creditos_jugador3;
+    GtkWidget *creditos_jugador1, *creditos_jugador2, *creditos_jugador3, *label_ganador;
                        
     inicializar_jugadores();
     
-    //nombre para los jugadores
-    strcpy(jugadores[0].nombre, "Jugador 1");
-    strcpy(jugadores[1].nombre, "Jugador 2");
-    strcpy(jugadores[2].nombre, "Jugador 3");
+    
 
     // Inicializa GTK
     gtk_init(&argc, &argv);
 
-    // Inicializa  baraja
+    
     
     // Inicializamos la baraja
     inicializarBaraja();
@@ -662,6 +750,7 @@ int main(int argc, char *argv[]) {
     creditos_jugador1 = GTK_WIDGET(gtk_builder_get_object(builder, "creditos_jugador1"));
     creditos_jugador2 = GTK_WIDGET(gtk_builder_get_object(builder, "creditos_jugador2"));
     creditos_jugador3 = GTK_WIDGET(gtk_builder_get_object(builder, "creditos_jugador3"));
+    label_ganador = GTK_WIDGET(gtk_builder_get_object(builder, "label_ganador"));
 
   
     // Conecta los widgets al callback
@@ -685,6 +774,7 @@ int main(int argc, char *argv[]) {
     g_object_set_data(G_OBJECT(button_actualizar), "creditos_jugador1", creditos_jugador1);
     g_object_set_data(G_OBJECT(button_actualizar), "creditos_jugador2", creditos_jugador2);
     g_object_set_data(G_OBJECT(button_actualizar), "creditos_jugador3", creditos_jugador3);
+    g_object_set_data(G_OBJECT(button_actualizar), "label_ganador", label_ganador);
 
 // Conectar el botón con la función de callback
 g_signal_connect(button_actualizar, "clicked", G_CALLBACK(on_button_actualizar_clicked), label_pozo);

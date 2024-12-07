@@ -2,6 +2,16 @@
 <!-- Generated with glade 3.40.0 -->
 <interface>
   <requires lib="gtk+" version="3.24"/>
+  <object class="GtkAdjustment" id="adjustment1">
+    <property name="upper">1000</property>
+    <property name="step-increment">10</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="adjustment2">
+    <property name="upper">1000</property>
+    <property name="step-increment">10</property>
+    <property name="page-increment">10</property>
+  </object>
   <object class="GtkWindow" id="main_window">
     <property name="can-focus">False</property>
     <child>
@@ -9,7 +19,7 @@
         <property name="visible">True</property>
         <property name="can-focus">False</property>
         <child>
-          <object class="GtkImage" id="card_suit">
+          <object class="GtkImage" id="carta_comunitaria1">
             <property name="width-request">100</property>
             <property name="height-request">80</property>
             <property name="visible">True</property>
@@ -74,7 +84,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkImage" id="carta_jugador1_1">
+          <object class="GtkImage" id="imagen_carta_jugador1_1">
             <property name="width-request">100</property>
             <property name="height-request">80</property>
             <property name="visible">True</property>
@@ -87,7 +97,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkImage" id="carta_jugador1_2">
+          <object class="GtkImage" id="imagen_carta_jugador1_2">
             <property name="width-request">100</property>
             <property name="height-request">80</property>
             <property name="visible">True</property>
@@ -114,34 +124,6 @@
           </packing>
         </child>
         <child>
-          <object class="GtkButton" id="button_retirarse">
-            <property name="label" translatable="yes">Retirarse</property>
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
-          </object>
-          <packing>
-            <property name="x">210</property>
-            <property name="y">599</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkButton" id="button_igualar">
-            <property name="label" translatable="yes">Igualar</property>
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
-          </object>
-          <packing>
-            <property name="x">320</property>
-            <property name="y">599</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkLabel" id="label_pozo">
             <property name="width-request">100</property>
             <property name="height-request">80</property>
@@ -150,12 +132,12 @@
             <property name="label" translatable="yes">pozo</property>
           </object>
           <packing>
-            <property name="x">453</property>
-            <property name="y">300</property>
+            <property name="x">415</property>
+            <property name="y">244</property>
           </packing>
         </child>
         <child>
-          <object class="GtkImage" id="carta_jugador2_1">
+          <object class="GtkImage" id="imagen_carta_jugador2_1">
             <property name="width-request">100</property>
             <property name="height-request">80</property>
             <property name="visible">True</property>
@@ -164,11 +146,11 @@
           </object>
           <packing>
             <property name="x">790</property>
-            <property name="y">248</property>
+            <property name="y">226</property>
           </packing>
         </child>
         <child>
-          <object class="GtkImage" id="carta_jugador2_2">
+          <object class="GtkImage" id="imagen_carta_jugador2_2">
             <property name="width-request">100</property>
             <property name="height-request">80</property>
             <property name="visible">True</property>
@@ -177,72 +159,7 @@
           </object>
           <packing>
             <property name="x">790</property>
-            <property name="y">325</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="card_value">
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="label" translatable="yes">label</property>
-          </object>
-          <packing>
-            <property name="x">168</property>
-            <property name="y">96</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="label_carta_comunitaria2">
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="label" translatable="yes">label</property>
-          </object>
-          <packing>
-            <property name="x">280</property>
-            <property name="y">96</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="label_carta_comunitaria3">
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="label" translatable="yes">label</property>
-          </object>
-          <packing>
-            <property name="x">381</property>
-            <property name="y">96</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="label_carta_comunitaria4">
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="label" translatable="yes">label</property>
-          </object>
-          <packing>
-            <property name="x">498</property>
-            <property name="y">96</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="label_carta_comunitaria5">
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="label" translatable="yes">label</property>
-          </object>
-          <packing>
-            <property name="x">595</property>
-            <property name="y">96</property>
+            <property name="y">358</property>
           </packing>
         </child>
         <child>
@@ -258,6 +175,143 @@
           <packing>
             <property name="x">660</property>
             <property name="y">610</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="imagen_carta_jugador3_1">
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="stock">gtk-missing-image</property>
+          </object>
+          <packing>
+            <property name="x">39</property>
+            <property name="y">225</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="imagen_carta_jugador3_2">
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="stock">gtk-missing-image</property>
+          </object>
+          <packing>
+            <property name="x">39</property>
+            <property name="y">358</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label_turno">
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label" translatable="yes">turno</property>
+          </object>
+          <packing>
+            <property name="x">199</property>
+            <property name="y">480</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="creditos_jugador1">
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label" translatable="yes">cj1</property>
+          </object>
+          <packing>
+            <property name="x">444</property>
+            <property name="y">376</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="creditos_jugador2">
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label" translatable="yes">cj2</property>
+            <property name="angle">90</property>
+          </object>
+          <packing>
+            <property name="x">660</property>
+            <property name="y">281</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="creditos_jugador3">
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label" translatable="yes">cj3</property>
+            <property name="angle">270</property>
+          </object>
+          <packing>
+            <property name="x">221</property>
+            <property name="y">290</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="spin_apostar">
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="adjustment">adjustment2</property>
+            <property name="climb-rate">10</property>
+            <property name="numeric">True</property>
+          </object>
+          <packing>
+            <property name="x">40</property>
+            <property name="y">510</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="button_rcomunitaria">
+            <property name="label" translatable="yes">nueva comunitaria</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+          </object>
+          <packing>
+            <property name="x">753</property>
+            <property name="y">76</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="button_actualizar">
+            <property name="label" translatable="yes">Actualiza
+     mesa</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+          </object>
+          <packing>
+            <property name="x">70</property>
+            <property name="y">61</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label_ganador">
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label" translatable="yes">Ultimo ganador</property>
+          </object>
+          <packing>
+            <property name="x">387</property>
+            <property name="y">47</property>
           </packing>
         </child>
       </object>
