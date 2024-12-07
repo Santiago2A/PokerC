@@ -29,7 +29,7 @@ typedef struct {
     double apuestaActual;    // Apuesta actual del jugador
     int retirado;           // ¿El jugador se retiró?
             
-    int numCartas;           // numero de cartas del jugador
+    //int numCartas;           // numero de cartas del jugador
     Carta cartas[7];  // Cartas del jugador (máximo 7)
     int mano;         // Tipo de mano que tiene el jugador (0-9)
     int cartaAlta;    // Carta más alta del jugador
@@ -59,7 +59,7 @@ void reconocer_mano(Jugador *jugador);
 // Prototipo de la función comparar_manos
 int comparar_manos(Jugador *jugador1, Jugador *jugador2, Jugador *jugador3);
 
-
+void imprimir_cartas(Jugador *jugador) ;
 
 
 
@@ -201,60 +201,77 @@ void on_comunitaria_button_clicked(GtkButton *button, gpointer user_data) {
     {
     case 1:
         Carta comunitaria1 = repartir_carta(baraja);
+        for (int i=0; i<3; i++){
+            jugadores[i].cartas[2] = comunitaria1;   
+        }
         actualizar_carta(comunitaria1, carta_comunitaria1 );
+        
         cartasComunitarias++;
         break;
     case 2:
         Carta comunitaria2 = repartir_carta(baraja);
+
+        for (int i=0; i<3; i++){
+            jugadores[i].cartas[3] = comunitaria2;   
+        }
         actualizar_carta(comunitaria2, carta_comunitaria2 );
         cartasComunitarias++;
         break;
     case 3:
         Carta comunitaria3 = repartir_carta(baraja);
+        for (int i=0; i<3; i++){
+            jugadores[i].cartas[4] = comunitaria3;   
+        }
+
+        
         actualizar_carta(comunitaria3, carta_comunitaria3 );
         cartasComunitarias++;
         break;
     case 4:
         Carta comunitaria4 = repartir_carta(baraja);
+        for (int i=0; i<3; i++){
+            jugadores[i].cartas[5] = comunitaria4;
+            printf("---------------------6\n");   
+        }
         actualizar_carta(comunitaria4, carta_comunitaria4 );
         cartasComunitarias++;
         break;
     case 5:
         Carta comunitaria5 = repartir_carta(baraja);
+
+        for (int i=0; i<3; i++){
+            printf("---------------------7\n");
+            jugadores[i].cartas[6] = comunitaria5;   
+        }
         actualizar_carta(comunitaria5, carta_comunitaria5 );
         cartasComunitarias++;
         break;
     
     
     default:
-        for (int i=0; i<3; i++){
-            jugadores[i].cartas[2] = comunitaria1;   
-        }
-        for (int i=0; i<3; i++){
-            jugadores[i].cartas[3] = comunitaria2;   
-        }
-        for (int i=0; i<3; i++){
-            jugadores[i].cartas[4] = comunitaria3;   
-        }
-        for (int i=0; i<3; i++){
-            jugadores[i].cartas[5] = comunitaria4;   
-        }
-        for (int i=0; i<3; i++){
-            jugadores[i].cartas[6] = comunitaria5;   
-        }
         
         
-        reconocer_mano(&jugadores[0]);
-        reconocer_mano(&jugadores[1]);
-        reconocer_mano(&jugadores[2]);
-
+        
+        
+        
+        
+        //printf("%s", jugadores[0].nombre);
+        
+        printf("---------------------8\n");
         for (int i = 0; i < 3; i++)
         {
-            printf("num%d \n", jugadores[i].numCartas);
-            printf("mano%d \n", jugadores[i].mano);
-            printf("alta %d \n", jugadores[i].cartaAlta);
-
+            imprimir_cartas(&jugadores[i]);
         }
+        printf("---------------------8\n");
+        for (int i = 0; i < 3; i++)
+        {
+            reconocer_mano(&jugadores[i]);
+        }
+        
+        
+        
+        
+        
         
 
         
@@ -284,6 +301,29 @@ void on_comunitaria_button_clicked(GtkButton *button, gpointer user_data) {
    
 }
 
+// Función para convertir el valor de la carta a un texto legible
+const char* obtener_valor(int valor) {
+    static const char* valores[] = {"As", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
+    return valores[valor];
+}
+
+// Función para convertir el símbolo de la carta a un texto legible
+const char* obtener_simbolo(int simbolo) {
+    static const char* simbolos[] = {"Picas", "Corazones", "Diamantes", "Tréboles"};
+    return simbolos[simbolo];
+}
+
+// Función para imprimir las cartas de un jugador
+void imprimir_cartas(Jugador *jugador) {
+    printf("Cartas de %s:\n", jugador->nombre);
+    for (int i = 0; i < 7; i++) { // Asume que el jugador siempre tiene 7 cartas
+        printf("  %s de %s (%s)\n", 
+               obtener_valor(jugador->cartas[i].valor), 
+               obtener_simbolo(jugador->cartas[i].simbolo), 
+               jugador->cartas[i].imagen);
+    }
+}
+
 
 
 void inicializar_jugadores() {
@@ -293,6 +333,7 @@ void inicializar_jugadores() {
         jugadores[i].dineroTotal = 1000;  // Valor fijo inicial
         jugadores[i].apuestaActual = 0;
         jugadores[i].retirado = 0;
+        //jugadores[i].numCartas= 6;
         
     }
 }
@@ -392,9 +433,9 @@ void subir_apuesta(GtkWidget *button, gpointer user_data) {
 
 
 // Función para ordenar las cartas por valor
-void ordenar_cartas(Carta cartas[], int tam) {
-    for (int i = 0; i < tam - 1; i++) {
-        for (int j = i + 1; j < tam; j++) {
+void ordenar_cartas(Carta cartas[], int numCartas) {
+    for (int i = 0; i < numCartas ; i++) {
+        for (int j = i + 1; j < numCartas; j++) {
             if (cartas[i].valor > cartas[j].valor) {
                 Carta temp = cartas[i];
                 cartas[i] = cartas[j];
@@ -406,75 +447,70 @@ void ordenar_cartas(Carta cartas[], int tam) {
 
 // Función para reconocer la mejor mano del jugador
 void reconocer_mano(Jugador *jugador) {
-    if (jugador->numCartas < 5) {
-        jugador->mano = 0; // No hay suficientes cartas
-        jugador->cartaAlta = -1;
-        return;
-    }
-
-    // Ordenamos las cartas
-    ordenar_cartas(jugador->cartas, jugador->numCartas);
-
+    ordenar_cartas(jugador->cartas, 7); // Ordenar las cartas del jugador por valor
+    
     // Variables de análisis
     int valores[13] = {0};  // Contador de valores (0=As, ..., 12=K)
     int simbolos[4] = {0};  // Contador de símbolos (palos)
 
     // Contamos valores y símbolos
-    for (int i = 0; i < jugador->numCartas; i++) {
+    for (int i = 0; i < 7; i++) {
         valores[jugador->cartas[i].valor]++;
         simbolos[jugador->cartas[i].simbolo]++;
+        
     }
+   
 
     // Revisamos combinaciones
-    int maxValor = jugador->cartas[jugador->numCartas - 1].valor; // La última carta tras ordenar es la más alta
     int par = 0, trio = 0, cuatro = 0;
     for (int i = 0; i < 13; i++) {
         if (valores[i] == 2) par++;
         if (valores[i] == 3) trio++;
         if (valores[i] == 4) cuatro++;
     }
-
-    // Full house
-    if (trio == 1 && par == 1) {
-        jugador->mano = 6; // Full house
-        jugador->cartaAlta = maxValor;
-        return;
-    }
-
-    // Cuatro iguales
-    if (cuatro == 1) {
-        jugador->mano = 7; // Cuatro iguales
-        jugador->cartaAlta = maxValor;
-        return;
-    }
-
-    // Escalera
+    
     int escalera = 0;
     for (int i = 0; i <= 8; i++) {
         if (valores[i] && valores[i + 1] && valores[i + 2] && valores[i + 3] && valores[i + 4]) {
             escalera = 1;
-            maxValor = i + 4;
             break;
         }
     }
-    if (escalera) {
-        jugador->mano = 4; // Escalera
-        jugador->cartaAlta = maxValor;
-        return;
-    }
+    
 
-    // Color
+    int color = 0;
     for (int i = 0; i < 4; i++) {
         if (simbolos[i] >= 5) {
-            jugador->mano = 5; // Color
-            jugador->cartaAlta = maxValor;
-            return;
+            color = 1;
+            break;
         }
     }
+    
 
-    // Carta alta
-    jugador->mano = 0;
-    jugador->cartaAlta = maxValor;
+    // Evaluar combinaciones
+    if (escalera && color) {
+        jugador->mano = 8; // Escalera de color
+    } else if (cuatro == 1) {
+        jugador->mano = 7; // Cuatro iguales
+    } else if (trio == 1 && par == 1) {
+        jugador->mano = 6; // Full house
+    } else if (color) {
+        jugador->mano = 5; // Color
+    } else if (escalera) {
+        jugador->mano = 4; // Escalera
+    } else if (trio == 1) {
+        jugador->mano = 3; // Trío
+    } else if (par == 2) {
+        jugador->mano = 2; // Doble pareja
+    } else if (par == 1) {
+        jugador->mano = 1; // Pareja
+    } else {
+        jugador->mano = 0; // Carta alta
+    }
+    
+
+    // Definir carta alta
+    jugador->cartaAlta = jugador->cartas[6].valor; // Última carta tras ordenar es la más alta
 }
 
 // Función para comparar las manos de tres jugadores
