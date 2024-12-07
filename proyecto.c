@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdbool.h>
+////Proyecto Poker en C con GTK Glade //Santiago Arias Abarca C20718 //Jose Pablo Alcazar C10165
 
 /*
 Este programa es un juego de poker realizado con la interfaz de glade
