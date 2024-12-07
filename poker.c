@@ -51,7 +51,13 @@ int cartasComunitarias = 1; // Inicialmente no hay cartas
 double pozo=0.0; //Apuesta actual de la ronda 
 
 int turno_actual = 0;  // Índice del jugador cuyo turno está activo
+//Declaracion de funciones
 
+// Prototipo de la función reconocer_mano
+void reconocer_mano(Jugador *jugador);
+
+// Prototipo de la función comparar_manos
+int comparar_manos(Jugador *jugador1, Jugador *jugador2, Jugador *jugador3);
 
 
 
@@ -236,6 +242,38 @@ void on_comunitaria_button_clicked(GtkButton *button, gpointer user_data) {
         for (int i=0; i<3; i++){
             jugadores[i].cartas[6] = comunitaria5;   
         }
+        
+        
+        reconocer_mano(&jugadores[0]);
+        reconocer_mano(&jugadores[1]);
+        reconocer_mano(&jugadores[2]);
+
+        for (int i = 0; i < 3; i++)
+        {
+            printf("num%d \n", jugadores[i].numCartas);
+            printf("mano%d \n", jugadores[i].mano);
+            printf("alta %d \n", jugadores[i].cartaAlta);
+
+        }
+        
+
+        
+        
+        
+        int ganador = comparar_manos(&jugadores[0], &jugadores[1], &jugadores[2]);
+        printf("ganador %d", ganador);
+        if (ganador == 1) {
+            printf("Jugador 1 gana.\n");
+        } else if (ganador == 2) {
+            printf("Jugador 2 gana.\n");
+        } else if (ganador == 3) {
+            printf("Jugador 3 gana.\n");
+        } else {
+            printf("Es un empate entre los jugadores.\n");
+        }
+
+        
+
 
         cartasComunitarias=1;
         break;
@@ -439,19 +477,73 @@ void reconocer_mano(Jugador *jugador) {
     jugador->cartaAlta = maxValor;
 }
 
-// Función para comparar las manos de dos jugadores
-int comparar_manos(Jugador *jugador1, Jugador *jugador2) {
+// Función para comparar las manos de tres jugadores
+int comparar_manos(Jugador *jugador1, Jugador *jugador2, Jugador *jugador3) {
+    // Primero comparamos las manos de jugador1 y jugador2
+    int ganador12;
     if (jugador1->mano > jugador2->mano) {
-        return 1; // Jugador 1 gana
+        ganador12 = 1; // Jugador 1 gana sobre jugador 2
     } else if (jugador1->mano < jugador2->mano) {
-        return 2; // Jugador 2 gana
+        ganador12 = 2; // Jugador 2 gana sobre jugador 1
     } else {
+        // Si las manos son iguales, comparamos las cartas altas
         if (jugador1->cartaAlta > jugador2->cartaAlta) {
-            return 1; // Jugador 1 gana
+            ganador12 = 1; // Jugador 1 gana sobre jugador 2
         } else if (jugador1->cartaAlta < jugador2->cartaAlta) {
-            return 2; // Jugador 2 gana
+            ganador12 = 2; // Jugador 2 gana sobre jugador 1
         } else {
-            return 0; // Empate
+            ganador12 = 0; // Empate entre jugador 1 y jugador 2
+        }
+    }
+
+    // Ahora comparamos el ganador de jugador1 y jugador2 contra jugador3
+    if (ganador12 == 1) {
+        // Jugador 1 es el ganador preliminar
+        if (jugador1->mano > jugador3->mano) {
+            return 1; // Jugador 1 gana
+        } else if (jugador1->mano < jugador3->mano) {
+            return 3; // Jugador 3 gana
+        } else {
+            // Si las manos son iguales, comparamos las cartas altas
+            if (jugador1->cartaAlta > jugador3->cartaAlta) {
+                return 1; // Jugador 1 gana
+            } else if (jugador1->cartaAlta < jugador3->cartaAlta) {
+                return 3; // Jugador 3 gana
+            } else {
+                return 0; // Empate
+            }
+        }
+    } else if (ganador12 == 2) {
+        // Jugador 2 es el ganador preliminar
+        if (jugador2->mano > jugador3->mano) {
+            return 2; // Jugador 2 gana
+        } else if (jugador2->mano < jugador3->mano) {
+            return 3; // Jugador 3 gana
+        } else {
+            // Si las manos son iguales, comparamos las cartas altas
+            if (jugador2->cartaAlta > jugador3->cartaAlta) {
+                return 2; // Jugador 2 gana
+            } else if (jugador2->cartaAlta < jugador3->cartaAlta) {
+                return 3; // Jugador 3 gana
+            } else {
+                return 0; // Empate
+            }
+        }
+    } else {
+        // Empate entre jugador1 y jugador2, ahora comparamos con jugador3
+        if (jugador3->mano > jugador1->mano) {
+            return 3; // Jugador 3 gana
+        } else if (jugador3->mano < jugador1->mano) {
+            return 0; // Empate entre jugador1, jugador2, y jugador3
+        } else {
+            // Si las manos son iguales, comparamos las cartas altas
+            if (jugador3->cartaAlta > jugador1->cartaAlta) {
+                return 3; // Jugador 3 gana
+            } else if (jugador3->cartaAlta < jugador1->cartaAlta) {
+                return 0; // Empate entre todos
+            } else {
+                return 0; // Empate entre todos
+            }
         }
     }
 }
